@@ -22,6 +22,7 @@
 ## SOFTWARE.
 
 from construct import *
+from construct.lib import Container
 
 '''
 NFTS SID: Windows user/group security identifier

@@ -22,6 +22,7 @@
 ## SOFTWARE.
 
 from construct import *
+from construct.lib import Container
 
 '''
 NTFS GUID: globally unique identifier
@@ -42,3 +43,57 @@ NTFSGUID = Struct(
     'Group4'                / Int16ul,
     'Group5'                / BytesInteger(6, swapped=True)
 )
+
+def _itoh(num, digits=2):
+    '''
+    Args:
+        num: Integer    => integer to convert to hex
+        digits: Integer => number of hex digits to print
+    Returns:
+        String
+        Hex representation of num
+    Preconditions:
+        num is of type Integer
+        digits is of type Integer
+    '''
+    assert isinstance(num, int)
+    assert isinstance(digits, int)
+    format_str = '%%%02dx'%digits
+    return (format_str%num).upper()
+
+def guid_to_string(guid):
+    '''
+    Args:
+        guid: NTFSGUID  => guid struct to convert to string
+    Returns:
+        String
+        String representation of GUID in the form shown above
+    Preconditions:
+        guid is instance of NTFSGUID
+    '''
+    return '-'.join([
+        _itoh(guid.Group1, 8),
+        _itoh(guid.Group2, 4),
+        _itoh(guid.Group3, 4),
+        _itoh(guid.Group4, 4),
+        _itoh(guid.Group5, 12)
+    ])
+
+def string_to_guid(guid):
+    '''
+    Args:
+        guid: String    => guid string to convert to NTFSGUID
+    Returns:
+        Container<String, Any>
+        Struct representation of String guid
+    Preconditions:
+        guid is of the format specified above (assumed True)
+    '''
+    groups = guid.strip().split('-')
+    return Container(
+        Group1  = int(groups[0], 16),
+        Group2  = int(groups[1], 16),
+        Group3  = int(groups[2], 16),
+        Group4  = int(groups[3], 16),
+        Group5  = int(groups[4], 16)
+    )
